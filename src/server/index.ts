@@ -1,4 +1,6 @@
 import amqp from "amqplib";
+import { publishJSON } from "../internal/pubsub/publish.js";
+import { ExchangePerilDirect, PauseKey } from "../internal/routing/routing.js";
 
 async function main() {
   console.log("Starting Peril server...");
@@ -18,6 +20,15 @@ async function main() {
       }
     });
   });
+
+  const confirmChannel: amqp.ConfirmChannel = await conn.createConfirmChannel();
+  try {
+    publishJSON(confirmChannel, ExchangePerilDirect, PauseKey, {
+      isPaused: false,
+    });
+  } catch (err) {
+    console.error("Error publishing message:", err);
+  }
 }
 
 main().catch((err) => {
