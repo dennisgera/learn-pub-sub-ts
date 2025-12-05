@@ -16,7 +16,7 @@ async function main() {
     ExchangePerilDirect,
     `${PauseKey}.${username}`,
     PauseKey,
-    "transient"
+    "transient",
   );
 }
 
