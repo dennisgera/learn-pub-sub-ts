@@ -6,7 +6,7 @@ import {
   printQuit,
   printClientHelp,
 } from "../internal/gamelogic/gamelogic.js";
-import { declareAndBind } from "../internal/pubsub/publish.js";
+import { declareAndBind, SimpleQueueType } from "../internal/pubsub/consume.js";
 import { ExchangePerilDirect, PauseKey } from "../internal/routing/routing.js";
 import { GameState } from "../internal/gamelogic/gamestate.js";
 import { commandSpawn } from "../internal/gamelogic/spawn.js";
@@ -25,7 +25,7 @@ async function main() {
     ExchangePerilDirect,
     `${PauseKey}.${username}`,
     PauseKey,
-    "transient",
+    SimpleQueueType.Transient,
   );
 
   const gs = new GameState(username);
