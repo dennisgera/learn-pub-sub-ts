@@ -23,3 +23,32 @@ export async function declareAndBind(
   await ch.bindQueue(queue.queue, exchange, key);
   return [ch, queue];
 }
+
+export async function subscribeJSON<T>(
+  conn: amqp.ChannelModel,
+  exchange: string,
+  queueName: string,
+  key: string,
+  queueType: SimpleQueueType,
+  handler: (data: T) => void,
+): Promise<void> {
+  const [ch, queue] = await declareAndBind(
+    conn,
+    exchange,
+    queueName,
+    key,
+    queueType,
+  );
+
+  await ch.consume(queue.queue, async (msg: amqp.ConsumeMessage | null) => {
+    if (!msg) return;
+    try {
+      const data = JSON.parse(msg.content.toString()) as T;
+      handler(data);
+    } catch (error) {
+      console.error("Error parsing message:", error);
+    } finally {
+      ch.ack(msg);
+    }
+  });
+}
