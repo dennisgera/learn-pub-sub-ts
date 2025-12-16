@@ -6,11 +6,7 @@ import {
   printQuit,
   printClientHelp,
 } from "../internal/gamelogic/gamelogic.js";
-import {
-  declareAndBind,
-  SimpleQueueType,
-  subscribeJSON,
-} from "../internal/pubsub/consume.js";
+import { SimpleQueueType, subscribeJSON } from "../internal/pubsub/consume.js";
 import { publishJSON } from "../internal/pubsub/publish.js";
 import {
   ExchangePerilDirect,
