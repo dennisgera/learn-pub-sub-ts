@@ -50,6 +50,9 @@ async function main() {
     `${ArmyMovesPrefix}.*`,
     SimpleQueueType.Transient,
     handlerMove(gs),
+    {
+      "x-dead-letter-exchange": "peril_dlx",
+    },
   );
 
   await subscribeJSON(
@@ -59,6 +62,9 @@ async function main() {
     PauseKey,
     SimpleQueueType.Transient,
     handlerPause(gs),
+    {
+      "x-dead-letter-exchange": "peril_dlx",
+    },
   );
 
   // interactive repl loop for client commands

@@ -24,6 +24,9 @@ async function main() {
     GameLogSlug,
     `${GameLogSlug}.*`,
     SimpleQueueType.Durable,
+    {
+      "x-dead-letter-exchange": "peril_dlx",
+    }
   );
 
   ["SIGINT", "SIGTERM"].forEach((signal) => {

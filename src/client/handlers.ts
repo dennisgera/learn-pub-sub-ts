@@ -5,7 +5,7 @@ import {
 } from "../internal/gamelogic/gamestate.js";
 import { handleMove, MoveOutcome } from "../internal/gamelogic/move.js";
 import { handlePause } from "../internal/gamelogic/pause.js";
-import { type AckType } from "../internal/pubsub/consume.js";
+import { AckType } from "../internal/pubsub/consume.js";
 
 export function handlerPause(gs: GameState): (ps: PlayingState) => AckType {
   return (ps: PlayingState): AckType => {
@@ -14,7 +14,7 @@ export function handlerPause(gs: GameState): (ps: PlayingState) => AckType {
     // print the prompt marker so the user can enter a new command
     process.stdout.write("> ");
     // Pause handler should always Ack
-    return "Ack";
+    return AckType.Ack;
   };
 }
 
@@ -27,10 +27,10 @@ export function handlerMove(gs: GameState): (move: ArmyMove) => AckType {
 
     // Ack only for Safe or MakeWar outcomes
     if (outcome === MoveOutcome.Safe || outcome === MoveOutcome.MakeWar) {
-      return "Ack";
+      return AckType.Ack;
     }
 
     // NackDiscard for SamePlayer or any other outcome
-    return "NackDiscard";
+    return AckType.NackDiscard;
   };
 }
