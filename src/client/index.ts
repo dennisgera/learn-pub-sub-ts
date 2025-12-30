@@ -13,11 +13,12 @@ import {
   ExchangePerilTopic,
   PauseKey,
   ArmyMovesPrefix,
+  WarRecognitionsPrefix,
 } from "../internal/routing/routing.js";
 import { GameState } from "../internal/gamelogic/gamestate.js";
 import { commandSpawn } from "../internal/gamelogic/spawn.js";
 import { commandMove } from "../internal/gamelogic/move.js";
-import { handlerMove, handlerPause } from "../client/handlers.js";
+import { handlerMove, handlerPause, handlerWar } from "../client/handlers.js";
 
 async function main() {
   console.log("Starting Peril client...");
@@ -35,7 +36,7 @@ async function main() {
       } finally {
         process.exit(0);
       }
-    }),
+    })
   );
 
   const username = await clientWelcome();
@@ -49,10 +50,10 @@ async function main() {
     `${ArmyMovesPrefix}.${username}`,
     `${ArmyMovesPrefix}.*`,
     SimpleQueueType.Transient,
-    handlerMove(gs),
+    handlerMove(gs, publishCh),
     {
       "x-dead-letter-exchange": "peril_dlx",
-    },
+    }
   );
 
   await subscribeJSON(
@@ -64,7 +65,19 @@ async function main() {
     handlerPause(gs),
     {
       "x-dead-letter-exchange": "peril_dlx",
-    },
+    }
+  );
+
+  await subscribeJSON(
+    conn,
+    ExchangePerilTopic,
+    WarRecognitionsPrefix,
+    `${WarRecognitionsPrefix}.*`,
+    SimpleQueueType.Durable,
+    handlerWar(gs),
+    {
+      "x-dead-letter-exchange": "peril_dlx",
+    }
   );
 
   // interactive repl loop for client commands
@@ -89,7 +102,7 @@ async function main() {
           publishCh,
           ExchangePerilTopic,
           `${ArmyMovesPrefix}.${username}`,
-          move,
+          move
         );
       } catch (err) {
         console.error("Error executing move command:", err);

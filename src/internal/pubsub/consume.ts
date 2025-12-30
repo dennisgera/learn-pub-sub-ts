@@ -49,7 +49,7 @@ export async function subscribeJSON<T>(
   queueName: string,
   key: string,
   queueType: SimpleQueueType,
-  handler: (data: T) => AckType | Promise<AckType>,
+  handler: (data: T) => Promise<AckType> | AckType,
   args: QueueArguments
 ): Promise<void> {
   const [ch, queue] = await declareAndBind(
